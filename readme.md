@@ -1,7 +1,9 @@
-[![npm](https://img.shields.io/npm/v/@bitjson/qr-code)](https://www.npmjs.com/package/@bitjson/qr-code)
-[![npm downloads](https://img.shields.io/npm/dm/@bitjson/qr-code)](https://www.npmjs.com/package/@bitjson/qr-code)
-[![Follow Bitjson on Twitter](https://img.shields.io/badge/follow-bitjson-1DA1F2?logo=twitter)](https://twitter.com/bitjson)
-[![GitHub stars](https://img.shields.io/github/stars/bitjson/qr-code.svg?style=social&logo=github&label=Stars)](https://github.com/bitjson/qr-code)
+[![npm](https://img.shields.io/npm/v/@xsor/qr-code)](https://www.npmjs.com/package/@xsor/qr-code)
+[![npm downloads](https://img.shields.io/npm/dm/@xsor/qr-code)](https://www.npmjs.com/package/@xsor/qr-code)
+[![GitHub stars](https://img.shields.io/github/stars/xsorifc28/qr-code.svg?style=social&logo=github&label=Stars)](https://github.com/xsorifc28/qr-code)
+
+# Fork!
+This is a fork, for changes, see [Fork Changes](#fork-changes)
 
 # [`<qr-code>`](https://qr.bitjson.com/)
 
@@ -111,3 +113,21 @@ npm run build
 ```
 
 You can test the built component by pointing the script in [`index.html`](index.html) to `dist/qr-code.js` and opening the page via the local filesystem.
+
+# Fork Changes
+
+## Added Feature: Corner Radius Control
+
+This fork adds a `cornerRadius` property to control the roundness of QR code position markers:
+
+- `cornerRadius="0"` - Square corners
+- `cornerRadius="0.5"` - Default rounded corners
+- `cornerRadius="1"` - Very rounded corners
+
+### Usage Example
+
+```html
+<qr-code contents="Hello World" corner-radius="0.25"></qr-code>
+```
+
+---

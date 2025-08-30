@@ -1,5 +1,5 @@
 {
-  "name": "@bitjson/qr-code",
+  "name": "@xsor/qr-code",
   "version": "1.0.2",
   "description": "QR Code Web Component",
   "module": "dist/esm/index.js",
@@ -27,13 +27,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bitjson/qr-code.git"
+    "url": "git+https://github.com/xsorifc28/qr-code.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bitjson/qr-code"
+    "url": "https://github.com/xsorifc28/qr-code"
   },
-  "homepage": "https://qr.bitjson.com",
   "jest": {
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/@stencil/core/testing/jest.preprocessor.js"
