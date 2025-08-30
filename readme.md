@@ -111,3 +111,19 @@ npm run build
 ```
 
 You can test the built component by pointing the script in [`index.html`](index.html) to `dist/qr-code.js` and opening the page via the local filesystem.
+
+## Added Feature: Corner Radius Control
+
+This fork adds a `cornerRadius` property to control the roundness of QR code position markers:
+
+- `cornerRadius="0"` - Square corners
+- `cornerRadius="0.5"` - Default rounded corners  
+- `cornerRadius="1"` - Very rounded corners
+
+### Usage Example
+
+```html
+<qr-code contents="Hello World" corner-radius="0.25"></qr-code>
+```
+
+---

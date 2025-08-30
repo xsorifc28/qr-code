@@ -1,7 +1,7 @@
 {
-  "name": "@bitjson/qr-code",
-  "version": "1.0.2",
-  "description": "QR Code Web Component",
+  "name": "qr-code",
+  "version": "1.0.3",
+  "description": "QR Code Web Component (with adjustable corner radius)",
   "module": "dist/esm/index.js",
   "main": "dist/index.js",
   "types": "dist/types/components.d.ts",
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bitjson/qr-code.git"
+    "url": "https://github.com/xsorifc28/qr-code.git"
   },
   "license": "MIT",
   "bugs": {

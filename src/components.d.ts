@@ -36,6 +36,7 @@ declare global {
     interface QrCode {
       'animateQRCode': (animation?: AnimationPreset | QRCodeAnimation) => void;
       'contents': string;
+      'cornerRadius': number;
       'getModuleCount': () => number;
       'maskXToYRatio': number;
       'moduleColor': string;
@@ -66,6 +67,7 @@ declare global {
   namespace JSXElements {
     export interface QrCodeAttributes extends HTMLAttributes {
       'contents'?: string;
+      'cornerRadius'?: number;
       'maskXToYRatio'?: number;
       'moduleColor'?: string;
       'onCodeRendered'?: (event: CustomEvent) => void;

@@ -39,7 +39,6 @@ export class BpQRCode {
   @Prop() positionCenterColor: string = '#000';
   @Prop() maskXToYRatio: number = 1;
   @Prop() squares: boolean = false;
-  @Prop() cornerRadius: number = 0.5;
 
   @State() data: string;
   @State() moduleCount: number;
@@ -65,7 +64,6 @@ export class BpQRCode {
   @Watch('positionCenterColor')
   @Watch('maskXToYRatio')
   @Watch('squares')
-  @Watch('cornerRadius')
   updateQR() {
     /**
      * E.g. Firefox, as of Firefox 61
@@ -184,7 +182,13 @@ export class BpQRCode {
     ${
       this.squares
         ? void 0
-        : renderQRPositionDetectionPatterns(this.moduleCount, margin, this.positionRingColor, this.positionCenterColor, coordinateShift, this.cornerRadius)
+        : renderQRPositionDetectionPatterns(
+            this.moduleCount,
+            margin,
+            this.positionRingColor,
+            this.positionCenterColor,
+            coordinateShift
+          )
     }
     ${renderQRModulesSVG(
       qr,
@@ -198,11 +202,38 @@ export class BpQRCode {
     )}
     </svg>`;
 
-    function renderQRPositionDetectionPatterns(count: number, margin: number, ringFill: string, centerFill: string, coordinateShift: number, cornerRadius: number) {
+    function renderQRPositionDetectionPatterns(
+      count: number,
+      margin: number,
+      ringFill: string,
+      centerFill: string,
+      coordinateShift: number
+    ) {
       return `
-      ${renderQRPositionDetectionPattern(margin, margin, margin, ringFill, centerFill, coordinateShift, cornerRadius)}
-      ${renderQRPositionDetectionPattern(count - 7 + margin, margin, margin, ringFill, centerFill, coordinateShift, cornerRadius)}
-      ${renderQRPositionDetectionPattern(margin, count - 7 + margin, margin, ringFill, centerFill, coordinateShift, cornerRadius)}
+      ${renderQRPositionDetectionPattern(
+        margin,
+        margin,
+        margin,
+        ringFill,
+        centerFill,
+        coordinateShift
+      )}
+      ${renderQRPositionDetectionPattern(
+        count - 7 + margin,
+        margin,
+        margin,
+        ringFill,
+        centerFill,
+        coordinateShift
+      )}
+      ${renderQRPositionDetectionPattern(
+        margin,
+        count - 7 + margin,
+        margin,
+        ringFill,
+        centerFill,
+        coordinateShift
+      )}
       `;
     }
 
@@ -212,27 +243,20 @@ export class BpQRCode {
       margin: number,
       ringFill: string,
       centerFill: string,
-      coordinateShift: number,
-      cornerRadius: number = 0.5
+      coordinateShift: number
     ) {
-      const outerRadius = cornerRadius;
-      const innerRadius = cornerRadius * 0.5;
-      const centerRadius = cornerRadius * 0.5;
-
-      if (cornerRadius === 0) {
-        return `
-        <rect class="position-ring" fill="${ringFill}" data-column="${x - margin}" data-row="${y - margin}" 
-              x="${x - coordinateShift - 0.5}" y="${y - coordinateShift - 0.5}" width="7" height="7"/>
-        <rect fill="white" x="${x - coordinateShift + 0.25}" y="${y - coordinateShift + 0.25}" width="4.5" height="4.5"/>
-        <rect class="position-center" fill="${centerFill}" data-column="${x - margin + 2}" data-row="${y - margin + 2}" 
-              x="${x - coordinateShift + 1.5}" y="${y - coordinateShift + 1.5}" width="3" height="3"/>
-        `;
-      } else {
-        return `
-        <path class="position-ring" fill="${ringFill}" data-column="${x - margin}" data-row="${y - margin}" d="M${x - coordinateShift} ${y - 0.5 - coordinateShift}h6s${outerRadius} 0 ${outerRadius} ${outerRadius}v6s0 ${outerRadius}-${outerRadius} ${outerRadius}h-6s-${outerRadius} 0-${outerRadius}-${outerRadius}v-6s0-${outerRadius} ${outerRadius}-${outerRadius}zm0.75 1s-${innerRadius} 0-${innerRadius} ${innerRadius}v4.5s0 ${innerRadius} ${innerRadius} ${innerRadius}h4.5s${innerRadius} 0 ${innerRadius}-${innerRadius}v-4.5s0-${innerRadius}-${innerRadius}-${innerRadius}h-4.5z"/>
-        <path class="position-center" fill="${centerFill}" data-column="${x - margin + 2}" data-row="${y - margin + 2}" d="M${x + 2 - coordinateShift} ${y + 1.5 - coordinateShift}h2s${centerRadius} 0 ${centerRadius} ${centerRadius}v2s0 ${centerRadius}-${centerRadius} ${centerRadius}h-2s-${centerRadius} 0-${centerRadius}-${centerRadius}v-2s0-${centerRadius} ${centerRadius}-${centerRadius}z"/>
-        `;
-      }
+      return `
+      <path class="position-ring" fill="${ringFill}" data-column="${
+        x - margin
+      }" data-row="${y - margin}" d="M${x - coordinateShift} ${
+        y - 0.5 - coordinateShift
+      }h6s.5 0 .5 .5v6s0 .5-.5 .5h-6s-.5 0-.5-.5v-6s0-.5 .5-.5zm.75 1s-.25 0-.25 .25v4.5s0 .25 .25 .25h4.5s.25 0 .25-.25v-4.5s0-.25 -.25 -.25h-4.5z"/>
+      <path class="position-center" fill="${centerFill}" data-column="${
+        x - margin + 2
+      }" data-row="${y - margin + 2}" d="M${x + 2 - coordinateShift} ${
+        y + 1.5 - coordinateShift
+      }h2s.5 0 .5 .5v2s0 .5-.5 .5h-2s-.5 0-.5-.5v-2s0-.5 .5-.5z"/>
+      `;
     }
 
     function renderQRModulesSVG(
