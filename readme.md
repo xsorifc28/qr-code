@@ -117,17 +117,28 @@ You can test the built component by pointing the script in [`index.html`](index.
 # Fork Changes
 
 ## Added Feature: Corner Radius Control
+@Prop() moduleRoundness: number = 0.5;
+@Prop() positionRingRoundness: number = 0.5;
+@Prop() positionCenterRoundness: number = 0.5;
 
-This fork adds a `cornerRadius` property to control the roundness of QR code position markers:
 
-- `cornerRadius="0"` - Square corners
-- `cornerRadius="0.5"` - Default rounded corners
-- `cornerRadius="1"` - Very rounded corners
+This fork adds properties to control the roundness of QR code details:
+
+- moduleRoundness: The roundness of the squares/dots
+- positionRingRoundness: The roundness of the position marker outer ring 
+- positionCenterRoundness: The roundness of the position marker inner circle
+
+The values can range from 0 to 1, 0 rendering a square and 1 rendering a full circle.
 
 ### Usage Example
 
 ```html
-<qr-code contents="Hello World" corner-radius="0.25"></qr-code>
+<qr-code 
+        contents="Hello World"
+        module-roundness="1"
+        position-ring-roundness="0.5"
+        position-center-roundness="0.5"
+></qr-code>
 ```
 
 ---
