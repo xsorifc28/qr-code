@@ -39,8 +39,11 @@ declare global {
       'getModuleCount': () => number;
       'maskXToYRatio': number;
       'moduleColor': string;
+      'moduleRoundness': number;
       'positionCenterColor': string;
+      'positionCenterRoundness': number;
       'positionRingColor': string;
+      'positionRingRoundness': number;
       'protocol': string;
       'squares': boolean;
     }
@@ -68,9 +71,12 @@ declare global {
       'contents'?: string;
       'maskXToYRatio'?: number;
       'moduleColor'?: string;
+      'moduleRoundness'?: number;
       'onCodeRendered'?: (event: CustomEvent) => void;
       'positionCenterColor'?: string;
+      'positionCenterRoundness'?: number;
       'positionRingColor'?: string;
+      'positionRingRoundness'?: number;
       'protocol'?: string;
       'squares'?: boolean;
     }

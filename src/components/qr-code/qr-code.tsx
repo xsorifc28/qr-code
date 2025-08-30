@@ -39,6 +39,9 @@ export class BpQRCode {
   @Prop() positionCenterColor: string = '#000';
   @Prop() maskXToYRatio: number = 1;
   @Prop() squares: boolean = false;
+  @Prop() moduleRoundness: number = 0.5;
+  @Prop() positionRingRoundness: number = 0.5;
+  @Prop() positionCenterRoundness: number = 0.5;
 
   @State() data: string;
   @State() moduleCount: number;
@@ -187,8 +190,10 @@ export class BpQRCode {
             margin,
             this.positionRingColor,
             this.positionCenterColor,
-            coordinateShift
-          )
+            coordinateShift, 
+            this.positionRingRoundness,
+            this.positionCenterRoundness
+        )
     }
     ${renderQRModulesSVG(
       qr,
@@ -198,7 +203,8 @@ export class BpQRCode {
       this.maskXToYRatio,
       this.squares,
       this.moduleColor,
-      coordinateShift
+      coordinateShift,
+      this.moduleRoundness
     )}
     </svg>`;
 
@@ -207,7 +213,9 @@ export class BpQRCode {
       margin: number,
       ringFill: string,
       centerFill: string,
-      coordinateShift: number
+      coordinateShift: number,
+      positionRingRoundness: number,
+      positionCenterRoundness: number
     ) {
       return `
       ${renderQRPositionDetectionPattern(
@@ -216,7 +224,9 @@ export class BpQRCode {
         margin,
         ringFill,
         centerFill,
-        coordinateShift
+        coordinateShift,
+        positionRingRoundness,
+        positionCenterRoundness
       )}
       ${renderQRPositionDetectionPattern(
         count - 7 + margin,
@@ -224,7 +234,9 @@ export class BpQRCode {
         margin,
         ringFill,
         centerFill,
-        coordinateShift
+        coordinateShift,
+        positionRingRoundness,
+        positionCenterRoundness
       )}
       ${renderQRPositionDetectionPattern(
         margin,
@@ -232,67 +244,127 @@ export class BpQRCode {
         margin,
         ringFill,
         centerFill,
-        coordinateShift
+        coordinateShift,
+        positionRingRoundness,
+        positionCenterRoundness
       )}
       `;
     }
 
-    function renderQRPositionDetectionPattern(
-      x: number,
-      y: number,
-      margin: number,
-      ringFill: string,
-      centerFill: string,
-      coordinateShift: number
-    ) {
-      return `
-      <path class="position-ring" fill="${ringFill}" data-column="${
-        x - margin
-      }" data-row="${y - margin}" d="M${x - coordinateShift} ${
-        y - 0.5 - coordinateShift
-      }h6s.5 0 .5 .5v6s0 .5-.5 .5h-6s-.5 0-.5-.5v-6s0-.5 .5-.5zm.75 1s-.25 0-.25 .25v4.5s0 .25 .25 .25h4.5s.25 0 .25-.25v-4.5s0-.25 -.25 -.25h-4.5z"/>
-      <path class="position-center" fill="${centerFill}" data-column="${
-        x - margin + 2
-      }" data-row="${y - margin + 2}" d="M${x + 2 - coordinateShift} ${
-        y + 1.5 - coordinateShift
-      }h2s.5 0 .5 .5v2s0 .5-.5 .5h-2s-.5 0-.5-.5v-2s0-.5 .5-.5z"/>
-      `;
-    }
+      function renderQRPositionDetectionPattern(
+          x: number,
+          y: number,
+          margin: number,
+          ringFill: string,
+          centerFill: string,
+          coordinateShift: number,
+          positionRingRoundness: number = 0,
+          positionCenterRoundness: number = 0
+      ) {
+          // Clamp roundness values between 0 (square) and 1 (circle)
+          positionRingRoundness = Math.max(0, Math.min(1, positionRingRoundness));
+          positionCenterRoundness = Math.max(0, Math.min(1, positionCenterRoundness));
 
-    function renderQRModulesSVG(
-      qr: QRCode,
-      count: number,
-      margin: number,
-      maskCenter: boolean,
-      maskXToYRatio: number,
-      squares: boolean,
-      moduleFill: string,
-      coordinateShift: number
-    ) {
-      let svg = '';
-      for (let column = 0; column < count; column += 1) {
-        const positionX = column + margin;
-        for (let row = 0; row < count; row += 1) {
-          if (
-            qr.isDark(column, row) &&
-            (squares ||
-              (!isPositioningElement(row, column, count) &&
-                !isRemovableCenter(
-                  row,
-                  column,
-                  count,
-                  maskCenter,
-                  maskXToYRatio
-                )))
-          ) {
-            const positionY = row + margin;
-            svg += squares
-              ? `
+          // Outer ring (7x7)
+          const outerSide = 7;
+          const outerCornerRadius = positionRingRoundness * (outerSide / 2);
+          const outerStraight = outerSide - 2 * outerCornerRadius;
+          const outerPath = `
+    M${x - coordinateShift + outerCornerRadius - 0.5} ${y - 0.5 - coordinateShift}
+    h${outerStraight}
+    ${outerCornerRadius > 0 ? `a${outerCornerRadius},${outerCornerRadius} 0 0 1 ${outerCornerRadius},${outerCornerRadius}` : ''}
+    v${outerStraight}
+    ${outerCornerRadius > 0 ? `a${outerCornerRadius},${outerCornerRadius} 0 0 1 -${outerCornerRadius},${outerCornerRadius}` : ''}
+    h-${outerStraight}
+    ${outerCornerRadius > 0 ? `a${outerCornerRadius},${outerCornerRadius} 0 0 1 -${outerCornerRadius},-${outerCornerRadius}` : ''}
+    v-${outerStraight}
+    ${outerCornerRadius > 0 ? `a${outerCornerRadius},${outerCornerRadius} 0 0 1 ${outerCornerRadius},-${outerCornerRadius}` : ''}
+    z
+  `;
+
+          // Inner ring hole (5x5)
+          const innerSide = 5;
+          const innerCornerRadius = positionRingRoundness * (innerSide / 2);
+          const innerStraight = innerSide - 2 * innerCornerRadius;
+          const innerOffset = 1;
+          const innerPath = `
+    M${x - coordinateShift + innerOffset + innerCornerRadius - 0.5} ${y - 0.5 - coordinateShift + innerOffset}
+    h${innerStraight}
+    ${innerCornerRadius > 0 ? `a${innerCornerRadius},${innerCornerRadius} 0 0 1 ${innerCornerRadius},${innerCornerRadius}` : ''}
+    v${innerStraight}
+    ${innerCornerRadius > 0 ? `a${innerCornerRadius},${innerCornerRadius} 0 0 1 -${innerCornerRadius},${innerCornerRadius}` : ''}
+    h-${innerStraight}
+    ${innerCornerRadius > 0 ? `a${innerCornerRadius},${innerCornerRadius} 0 0 1 -${innerCornerRadius},-${innerCornerRadius}` : ''}
+    v-${innerStraight}
+    ${innerCornerRadius > 0 ? `a${innerCornerRadius},${innerCornerRadius} 0 0 1 ${innerCornerRadius},-${innerCornerRadius}` : ''}
+    z
+  `;
+
+          // Center (3x3)
+          const centerSide = 3;
+          const centerCornerRadius = positionCenterRoundness * (centerSide / 2);
+          const centerStraight = centerSide - 2 * centerCornerRadius;
+          const centerOffset = 2;
+          const centerPath = `
+    M${x - coordinateShift + centerOffset + centerCornerRadius - 0.5} ${y - 0.5 - coordinateShift + centerOffset}
+    h${centerStraight}
+    ${centerCornerRadius > 0 ? `a${centerCornerRadius},${centerCornerRadius} 0 0 1 ${centerCornerRadius},${centerCornerRadius}` : ''}
+    v${centerStraight}
+    ${centerCornerRadius > 0 ? `a${centerCornerRadius},${centerCornerRadius} 0 0 1 -${centerCornerRadius},${centerCornerRadius}` : ''}
+    h-${centerStraight}
+    ${centerCornerRadius > 0 ? `a${centerCornerRadius},${centerCornerRadius} 0 0 1 -${centerCornerRadius},-${centerCornerRadius}` : ''}
+    v-${centerStraight}
+    ${centerCornerRadius > 0 ? `a${centerCornerRadius},${centerCornerRadius} 0 0 1 ${centerCornerRadius},-${centerCornerRadius}` : ''}
+    z
+  `;
+
+          return `
+    <path class="position-ring" fill="${ringFill}" fill-rule="evenodd" data-column="${x - margin}" data-row="${y - margin}" d="${outerPath.trim() + innerPath.trim()}"/>
+    <path class="position-center" fill="${centerFill}" data-column="${x - margin + 2}" data-row="${y - margin + 2}" d="${centerPath.trim()}"/>
+  `;
+      }
+
+      function renderQRModulesSVG(
+          qr: QRCode,
+          count: number,
+          margin: number,
+          maskCenter: boolean,
+          maskXToYRatio: number,
+          squares: boolean,
+          moduleFill: string,
+          coordinateShift: number,
+          moduleRoundness: number = 1
+      ) {
+          let svg = '';
+          for (let column = 0; column < count; column += 1) {
+              const positionX = column + margin;
+              for (let row = 0; row < count; row += 1) {
+                  if (
+                      qr.isDark(column, row) &&
+                      (squares ||
+                          (!isPositioningElement(row, column, count) &&
+                              !isRemovableCenter(
+                                  row,
+                                  column,
+                                  count,
+                                  maskCenter,
+                                  maskXToYRatio
+                              )))
+                  ) {
+                      const positionY = row + margin;
+
+                      if (squares) {
+                          // Keep existing square logic unchanged
+                          svg += `
             <rect x="${positionX - 0.5 - coordinateShift}" y="${
-                  positionY - 0.5 - coordinateShift
-                }" width="1" height="1" />
-            `
-              : `
+                              positionY - 0.5 - coordinateShift
+                          }" width="1" height="1" />
+          `;
+                      } else {
+                          // New rounded rectangle logic
+                          if (moduleRoundness === 1) {
+                              // Full circle (moduleRoundness = 1)
+                              svg += `
             <circle
                 class="module"
                 fill="${moduleFill}"
@@ -301,11 +373,28 @@ export class BpQRCode {
                 data-column="${column}"
                 data-row="${row}"
                 r="0.5"/>`;
+                          } else {
+                              // Rounded rectangle (moduleRoundness 0-0.99)
+                              const radius = moduleRoundness * 0.5; // Scale roundness to module size
+                              svg += `
+            <rect
+                class="module"
+                fill="${moduleFill}"
+                x="${positionX - 0.5 - coordinateShift}"
+                y="${positionY - 0.5 - coordinateShift}"
+                width="1"
+                height="1"
+                rx="${radius}"
+                ry="${radius}"
+                data-column="${column}"
+                data-row="${row}"/>`;
+                          }
+                      }
+                  }
+              }
           }
-        }
+          return svg;
       }
-      return svg;
-    }
 
     function isPositioningElement(row: number, column: number, count: number) {
       const elemWidth = 7;
